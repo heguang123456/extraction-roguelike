@@ -1,0 +1,446 @@
+/* 局内页：地图 / 战斗 / 撤离 / 结算 / 弹层 */
+
+.game-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  color: #8a93a6;
+  font-size: 28px;
+}
+
+.game-root {
+  min-height: 100vh;
+  background: #141821;
+  color: #e6e9f0;
+  padding: 20px 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+/* HUD */
+.game-hud {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.hud-hp-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hud-label {
+  font-size: 26px;
+  font-weight: 600;
+  color: #ff6b6b;
+}
+.hud-hp-bar {
+  flex: 1;
+  height: 20px;
+  background: #262c3a;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.hud-hp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #e74c3c, #ff6b6b);
+  border-radius: 10px;
+  transition: width 0.12s linear;
+}
+.hud-hp-text {
+  font-size: 24px;
+  color: #c9cfdc;
+}
+.hud-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 22px;
+  color: #aab2c2;
+}
+.hud-item {
+  font-size: 22px;
+}
+.hud-time-warn {
+  color: #ff6b6b;
+  font-weight: 700;
+}
+
+/* 地图 */
+.map-wrap {
+  position: relative;
+  background: #10141c;
+  border: 2px solid #2a3142;
+  border-radius: 12px;
+  overflow: hidden;
+  box-sizing: content-box;
+}
+.map-grid {
+  display: grid;
+}
+.cell-wall {
+  background: #232a38;
+}
+.cell-floor {
+  background: #1a2030;
+}
+
+/* 实体（撤离点 / 箱子 / 敌人 / 玩家）绝对定位 */
+.entity {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.entity-icon {
+  width: 78%;
+  height: 78%;
+}
+.entity-tag {
+  position: absolute;
+  bottom: 1px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 16px;
+  color: #4ecb71;
+  line-height: 1;
+}
+.extract-glow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(78, 203, 113, 0.35), transparent 70%);
+  border-radius: 50%;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* 箱子 */
+.crate-gold {
+  filter: drop-shadow(0 0 6px rgba(255, 193, 7, 0.8));
+}
+.crate-dim {
+  opacity: 0.45;
+}
+.crate-progress {
+  position: absolute;
+  bottom: 2px;
+  left: 10%;
+  width: 80%;
+  height: 5px;
+  background: #262c3a;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.crate-progress-fill {
+  height: 100%;
+  background: #ffc107;
+}
+.loot-ping {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #4ecb71;
+  box-shadow: 0 0 6px #4ecb71;
+  animation: pulse 1s infinite;
+}
+.gold-glow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255, 193, 7, 0.5), transparent 75%);
+  border-radius: 50%;
+  animation: pulse 1s infinite;
+}
+
+/* 敌人 */
+.enemy-icon {
+  position: relative;
+  z-index: 1;
+}
+.enemy-elite {
+  filter: drop-shadow(0 0 6px rgba(255, 60, 60, 0.9));
+}
+.enemy-charging {
+  filter: drop-shadow(0 0 12px rgba(255, 0, 0, 1));
+}
+.enemy-hp {
+  position: absolute;
+  bottom: 0;
+  left: 15%;
+  width: 70%;
+  height: 5px;
+  background: #262c3a;
+  border-radius: 3px;
+  overflow: hidden;
+  z-index: 2;
+}
+.enemy-hp-fill {
+  height: 100%;
+  background: #e74c3c;
+}
+.charge-warn {
+  position: absolute;
+  top: -4px;
+  right: -2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ff0000;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 900;
+  text-align: center;
+  line-height: 20px;
+  z-index: 3;
+  animation: pulse 0.5s infinite;
+}
+
+/* 玩家 */
+.player-glow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(66, 133, 244, 0.5), transparent 70%);
+  border-radius: 50%;
+}
+.player-icon {
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 0 4px rgba(66, 133, 244, 0.8));
+}
+
+/* 撤离进度 */
+.extract-bar-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.extract-bar {
+  flex: 1;
+  height: 18px;
+  background: #262c3a;
+  border-radius: 9px;
+  overflow: hidden;
+}
+.extract-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2ecc71, #4ecb71);
+  transition: width 0.12s linear;
+}
+.extract-bar-text {
+  font-size: 22px;
+  color: #4ecb71;
+}
+
+/* 控制区 */
+.game-controls {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 0;
+}
+.joy {
+  width: 168px;
+  height: 168px;
+  border-radius: 50%;
+  background: #1d2430;
+  border: 3px solid #39415a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+.joy-dot {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #4b5572;
+  transition: transform 0.05s linear;
+}
+.ctrl-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ctrl-btn {
+  width: 160px;
+  height: 74px;
+  border-radius: 16px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+}
+.ctrl-heal {
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  border: none;
+}
+.ctrl-attack {
+  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  border: none;
+}
+.ctrl-disabled {
+  opacity: 0.45;
+}
+
+/* 弹层 */
+.result-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 10, 16, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 30px;
+}
+.result-modal {
+  width: 100%;
+  max-width: 620px;
+  background: #1b2230;
+  border: 2px solid #39415a;
+  border-radius: 20px;
+  padding: 28px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.result-title {
+  font-size: 36px;
+  font-weight: 800;
+  text-align: center;
+  color: #e6e9f0;
+}
+.result-win {
+  color: #4ecb71;
+}
+.result-dead {
+  color: #ff6b6b;
+}
+.result-sub {
+  font-size: 24px;
+  color: #aab2c2;
+  text-align: center;
+}
+.result-achieve {
+  color: #ffc107;
+}
+.result-loot {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.result-loot-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #141821;
+  border-radius: 10px;
+  padding: 10px;
+}
+.result-loot-icon {
+  width: 44px;
+  height: 44px;
+}
+.result-loot-name {
+  flex: 1;
+  font-size: 24px;
+}
+.result-loot-value {
+  font-size: 22px;
+  color: #4ecb71;
+}
+.result-btn {
+  margin-top: 8px;
+  height: 76px;
+  border-radius: 16px;
+  font-size: 30px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #2c6bff, #4285f4);
+  color: #fff;
+  border: none;
+}
+.result-btn-ghost {
+  background: #262c3a;
+  color: #c9cfdc;
+}
+
+/* 替换弹层 */
+.replace-new {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #141821;
+  border-radius: 12px;
+  padding: 12px;
+}
+.replace-new-icon {
+  width: 64px;
+  height: 64px;
+  border: 3px solid #fff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1d2430;
+}
+.replace-item-icon {
+  width: 44px;
+  height: 44px;
+}
+.replace-new-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.replace-new-name {
+  font-size: 26px;
+  font-weight: 700;
+}
+.replace-new-value {
+  font-size: 22px;
+  color: #aab2c2;
+}
+.replace-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.replace-item-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #141821;
+  border-radius: 10px;
+  padding: 10px;
+}
+.replace-item-name {
+  flex: 1;
+  font-size: 24px;
+  color: #e6e9f0;
+}
+.replace-item-action {
+  font-size: 22px;
+  color: #4285f4;
+}
